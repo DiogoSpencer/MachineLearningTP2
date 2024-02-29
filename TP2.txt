@@ -1,0 +1,91 @@
+AtenÃ§Ã£o:
+- NÃ£o edite este ficheiro em programas como Word e afins. Use exclusivamente um editor de texto simples. Em caso de dÃºvida, use o editor do Spyder.
+- NÃ£o altere a estrutura deste ficheiro. Preencha as respostas apenas nos espaÃ§os respectivos (a seguir Ã  tag R#:)
+- Pode adicionar linhas no espaÃ§o para as respostas mas as respostas devem ser sucintas e directas.
+- Pode incluir referÃªncias a imagens ou a ficheiros html como os relatÃ³rios gerados com os clusters. Para isso basta incluir este documento na pasta com os reports ou imagens e referÃ­-los no texto pelo nome do ficheiro numa linha isolada. Por exemplo, a linha
+
+teste.png
+
+refere um ficheiro de imagem teste.png na mesma pasta deste documento.
+
+QUESTÃ”ES:
+
+Q1: Explique como seleccionou os melhores atributos para a fase de clustering. Em particular, os mÃ©todos de visualizaÃ§Ã£o usados para explorar os 18 atributos extraÃ­dos e quaisquer testes estatÃ­sticos usados.
+R1: Os melhores atributos para a fase de clustering foram escolhidos com base na função f_classif que retorna uma computação do ANOVA F-value,
+    quanto maior o valor, mais independentes as features são entre si, pelo que foram escolhidos os maiores valores, tendo sido realizados vários testes nos algoritmos de clustering
+    acabando por obtar-se por escolher como melhor valor 6 features.
+
+Q2: Depois de seleccionar os atributos, standardizou ou normalizou os valores? Justifique a sua decisÃ£o.
+R2: Foi realizada uma standardização dos dados, achou-se boa prática mesmo que os valores de cada feature estejam na mesma unidade (valor do pixel),
+    estes podem ter valores bastante distintos, o que pode afetar especialmente no algoritmo de clustering K-Means.
+
+Q3: Explique como encontrou o valor do raio da vizinhanÃ§a (epsilon) para o algoritmo de DBSCAN pelo procedimento descrito no artigo "A density-based algorithm for discovering clusters in large spatial databases with noise".
+R3: Foi realizado um plot por ordem decrescente de todas as distâncias ao quinto vizinho, esta distância foi calculada a partir do KNeighborsClassifier,
+    é observável que o gráfico é composto por linhas relativamente retas, mas existe um certo intrevalo de valores de distância onde existe uma curvatura
+    acentuada, foi então escolhido o intrevalo de 1 a 3 para treinar o DBSCAN e observar as métricas.
+
+Q4: Examinando os clusters gerados pelo algoritmo DBSCAN com o valor otimizado pelo mÃ©todo descrito no artigo, parece-lhe que o resultado Ã© adequado para aglomerar estas imagens? Justifique a sua resposta.
+R4: Não, é observável que o DBSCAN com o valor de epsilon optimizado não permite ao algoritmo de clustering ser apropriado para aglumerar estes dados em clusters,
+    o DBSCAN baseia-se em medir a densidade dos pontos, pelo que para os dados em questão com base nos resultados obtidos não é apropriado.
+
+Q5: Descreva a sua anÃ¡lise dos parÃ¢metros k (para K-Means) e epsilon (para DBSCAN) usando os indicadores internos e externos indicados no enunciado. Inclua os dois grÃ¡ficos com os valores dos indicadores (indicando o nome da imagem de cada plot numa linha da resposta) em funÃ§Ã£o dos parÃ¢metros k e epsilon e descreva a escolha dos intervalos nos quais examinou estes parÃ¢metros. Indique, justificando, que conclusÃµes pode tirar desta anÃ¡lise.
+R5: 
+    DBSCANfit.png KMEANSfit.png
+
+    Como explicado anteriormente, no caso do epsilon para o DBSCAN foi determinado um intrevalo de valores com base nas distâncias ao quinto vizinho,
+    calculando as métricas internas e externas, observou-se que todos os valores eram extremamente baixos, com exceção do Silhouette score, mas esta métrica
+    não faz sentido ser avaliada no caso do DBSCAN pois baseia-se numa distância média entre clusters e o DBSCAN baseia-se em densidades de pontos, ou seja
+    como todas as métricas relevantes para o algoritmo obtiveram valores baixos conclui-se que o DBSCAN não conseguiu ter uma boa performance neste conjunto de dados,
+    comprovando o dito na alinea anterior.
+
+    No caso do algoritmo de K-Means os valores de k fizeram-se variar entre 2 como lower bound, mas para o upper bound realizou-se vários testes, até conseguir perceber-se
+    quando é que as métricas não melhoravam mais, obtou-se por escolher então o valor de 20 clusters como upper bound, sendo este já um valor bastante alto para o problema em questão.
+    Observando as métricas, os valores de precision, recall, f1 e rand index, têm como base as figuras que já estão labeled, como apenas existe uma pequena parte delas nesta situação,
+    estes valores não são relevantes o suficiente pelo que é necessário observar com mais ênfase o valor de silhouette score, e com base na figura, escolheu-se o valor de em que
+    maximizava o silhouette score em conjunto com as outras métricas, mas dando um peso maior a esta.
+    
+
+Q6: Seleccione alguns valores dos parÃ¢metros testados na questÃ£o cinco e examine os clusters correspondentes com mais atenÃ§Ã£o, gerando o ficheiro HTML com as imagens. Justifique a escolha destes valores, discuta as diferentes opÃ§Ãµes e proponha uma recomendaÃ§Ã£o que poderia ajudar a tarefa dos biÃ³logos de classificar as cÃ©lulas e rejeitar erros de segmentaÃ§Ã£o.
+R6: 
+    KMEANS-4.html KMEANS-5.html KMEANS-6.html KMEANSfit.png
+
+    Relativamente ao K-Means, foram escolhidos valores para o número de clusters que maximizem as métricas dando mais ênfase á silhouette score como já referido
+    anteriormente, pelo que observando o gráfico presente em KMEANSfit.png, treinou-se o K-Means para 4, 5 e 6 clusters como pode ser observável nos ficheiros
+    html respetivamente, para o caso de 4 clusters o algoritmo não conseguiu distinguir as imagens que estavam mal segmentadas, pelo que não é o pretendido para
+    o caso descartando assim esta hipótese, analizando o caso de 5 clusters, parece ser o que melhor divide as células em clusters, atribuindo um cluster apenas
+    para as imagens que estão mal segmentadas, existindo ainda assim algumas imagens mal segmentadas distribuidas nos outros clusters, é possível observar que cada cluster
+    divide as células em "estados", pelo que me parece um número de clusters aceitável, relativamente á divisão em 6 clusters, parece haver uma divisão excessiva,
+    o cluster 4 e 5 parecem ter o mesmo estado de célula, contúdo nestes 3 números de clusters testados existe sempre um cluster com as mesmas 4 imagens que
+    não faz sentido, penso que as features selecionadas possam ser de alguma forma melhoradas no caso do uso do K-Means.
+    Este algoritmo parece ajudar os biólogos a dividir as células em várias estados de vida, e conseguir também dividir grande parte das imagens que ficaram mal segmentadas.
+
+    DBSCAN1.25.html DBSCAN1.5.html
+
+    O algoritmo DBSCAN foi testado para vários valores de epsilon, mas em todos casos testados apenas agrupava os dados em 2 clusters, sendo 1 deles de ruído,
+    pelo que vem confirmar mais uma vez que este algoritmo, utilizando o epsilon optimizado, não tem um bom desempenho para este conjunto de dados.
+
+Q7: Discuta vantagens, problemas ou outros aspectos destes dois algoritmos (K-Means e DBSCAN) que considere relevantes para ajudar os biÃ³logos a organizar estas imagens, considerando o seu conhecimento teÃ³rico destes algoritmos bem como os resultados que obteve no seu trabalho.
+R7: O algoritmo K-Means baseia-se em medir distâncias a centroids enquanto que o algoritmo DBSCAN mede densidade de pontos num dado raio.
+    O algoritmo DBSCAN não requer um número de clusters como parâmetro de entrada, como muitas vezes os dados não podem ser visiveis para humanos devido ás várias dimensões,
+    não é uma má opção começar por ver se o desempenho do DBSCAN é positivo, o que não é o caso para os nossos dados, então é necessário explorar outros algoritmos
+    neste caso o K-Means, e observa-se que tem um desempenho bastante superior. O que nos permite concluir de certa forma a distruibuição dos dados, 
+    os pontos estão distribuidos com uma alta concentração. Contúdo o algoritmo K-Means requer um tunning do número de clusters, e por vezes é díficil
+    tendo apenas os dados conseguir deduzir qual o intrevalo em que devemos testar o número de clusters.
+
+Q8: Considere outros algoritmos de clustering implementados na biblioteca Scikit-Learn. Escolha um e aplique-o a este problema, optimizando os parÃ¢metros que julgar adequado da forma que lhe parecer melhor. Justifique a sua escolha e discuta se esta opÃ§Ã£o daria resultados mais Ãºteis para os biÃ³logos.
+R8: 
+    GM-5.html GM-6.html GM-9.html GMfit.png AffinityPropagation0.65.html
+
+    Devido ao facto de perceber que utilizar algoritmos que se baseiem em densidade não tem um bom desempenho escolheu-se o algoritmo que se assemelha ao K-Means
+    denominado de Gaussian Mixture, este algoritmo foi treinado apenas para o mesmo parâmetro do K-Means que é o número de clusters, tendo o nome de n_components no GaussianMixture
+    do Scikit Learn, os resultados foram bastante semelhantes aos obtidos utilizando o algoritmo de K-Means, não tendo sido observada nenhuma diferença significativa nas métricas,
+    nem no clustering. Realizou-se também alguns testes no algoritmo de AffinityPropagation, e também obteve bons resultados, não existindo ainda assim uma diferença significativa no
+    clustering entre este o GaussianMixture e o K-Means.
+
+Q9: (Opcional) Implemente o algoritmo de clustering hierÃ¡rquico Bissecting K-Means, conforme descrito na pÃ¡gina do enunciado e na Aula 19. Examine e discuta os resultados e sua aplicaÃ§Ã£o ao problema de ajudar os biÃ³logos a selecionar e classificar imagens de cÃ©lulas.
+R9: 
+    bisecting_test_2_iterations.html bisecting_test_3_iterations.html bisecting_test_4_iterations.html bisecting_test_5_iterations.html bisecting_test_6_iterations.html bisecting_test_7_iterations.html bisecting_test_8_iterations.html bisecting_test_9_iterations.html
+
+    O algoritmo de Bissceting K-Means foi implementado e os resultados foram de certa forma positivos, não foram calculadas métricas para este algoritmo mas, foram gerados os ficheiros
+    html, e consegui-se observar que este teve um bom desempenho, agrupando em clusters em baixo na hierarquia aquelas células que estão numa outra fase da transformação mas ainda não alteraram de estado,
+    podendo assim os biólogos agrupar de forma mais detalhada as células pois existe ainda uma separação mais rigorosoa.
